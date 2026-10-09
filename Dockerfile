@@ -14,14 +14,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgtk-3-0 libxshmfence1 fontconfig fonts-dejavu-core git ca-certificates \
     && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
 
-RUN curl -fsSL https://claude.ai/install.sh | bash
-
 COPY --from=fetch /opt/orca /opt/orca
+
+RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local-bin.sh
 
 RUN useradd -m -s /bin/bash orca
 USER orca
 WORKDIR /home/orca
-ENV LIBGL_ALWAYS_SOFTWARE=1 ELECTRON_DISABLE_SANDBOX=1 \
-    DBUS_SESSION_BUS_ADDRESS=disabled: ORCA_PAIRING_ADDRESS=127.0.0.1
+
+ENV LIBGL_ALWAYS_SOFTWARE=1 ELECTRON_DISABLE_SANDBOX=1 DBUS_SESSION_BUS_ADDRESS=disabled: ORCA_PAIRING_ADDRESS=127.0.0.1
+
+LABEL org.opencontainers.image.source=https://github.com/altrao/orca-headless
+                                                                                        
 EXPOSE 6768
 CMD ["sh", "-c", "exec /opt/orca/AppRun serve --port 6768 --pairing-address \"$ORCA_PAIRING_ADDRESS\" --password-store=basic"]
