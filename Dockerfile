@@ -16,7 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=fetch /opt/orca /opt/orca
 
-RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local-bin.sh
+RUN echo 'export PATH="$HOME/.local/bin:$PATH:/host/usr/bin"' > /etc/profile.d/local-bin.sh
+ENV PATH="/home/orca/.local/bin:${PATH}:/host/usr/bin"
 
 RUN useradd -m -s /bin/bash orca
 USER orca
